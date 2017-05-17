@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    //https://api.douban.com/v2/movie/in_theaters?start=0&count=5&callback=CALLBACK
+    var jsonp=function(url,params,callback){
+        //第一步，将需要传递的参数拼接好 {start:0,count:5}
+        var url=url+"?";
+        for(var key in params){
+            //?start=0&count=5&
+            url+=key+"="+params[key]+"&";
+        }
+
+        var callbackName="jiacheng_"+(new Date()-0);
+        url=url+"callback="+callbackName;//https://api.douban.com/v2/movie/in_theaters?start=0&count=5&jiacheng_1494956463594
+
+        //第二步：动态创建script标签，并插入到文档中，src天然跨域属性
+        var script=document.createElement('script');
+        script.src=url;
+        document.body.appendChild(script);
+        window[callbackName]=function (data) {
+            callback(data);
+            document.body.removeChild(script);
+            delete window[callbackName];
+        };
+
+
+
+    };
+    jsonp('https://api.douban.com/v2/movie/in_theaters',
+        {
+            start:0,
+            count:5,
+        },function (data) {// CALLBACK({})
+            console.log(data);
+        })
+</script>
+</body>
+</html>
